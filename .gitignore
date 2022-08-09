@@ -7,3 +7,4 @@ MANIFEST
 *.egg-info/
 *.egg
 .idea
+/ikernel_remote/__version.py

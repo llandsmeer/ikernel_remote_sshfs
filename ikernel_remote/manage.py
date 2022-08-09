@@ -17,11 +17,12 @@ import sys
 from os import path
 from subprocess import list2cmdline
 
-# How we identify kernels that rik will manage
+# How we identify kernels that ikernel_remote will manage
 # These go through a compatibility layer to work with IPython and Jupyter
 from ikernel_remote.compat import kernelspec as ks
 from ikernel_remote.compat import tempdir
 
+from ikernel_remote import __version__
 
 def delete_kernel(kernel_name):
     """
@@ -221,9 +222,10 @@ def manage():
             description.append(display)
 
     # The raw formatter stops lines wrapping
-    parser = argparse.ArgumentParser(
-        prog=sys.argv[0]+' manage', description="\n".join(description),
+    parser = argparse.ArgumentParser(description="\n".join(description),
         formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-V', '--version', action='version',
+                        version="%(prog)s: ikernel_remote ver. " + __version__)
     parser.add_argument('--show', '-s', help="Print the contents of the "
                         "kernel.")
     parser.add_argument('--add', '-a', action="store_true", help="Add a new "
@@ -277,7 +279,8 @@ def manage():
 
     # Temporarily remove 'manage' from the arguments
     raw_args = sys.argv[:]
-    sys.argv.remove('manage')
+    if len(sys.argv) > 1 and  sys.argv[1] == 'manage':
+        del sys.argv[1]
     args = parser.parse_args()
     sys.argv = raw_args
 

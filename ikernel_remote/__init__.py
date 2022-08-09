@@ -5,5 +5,4 @@ Run kernels remotely for IPython/Jupyter notebooks.
 
 """
 
-__version__ = '0.6.0'
-''
+from .__version import __version__, __version_tuple__

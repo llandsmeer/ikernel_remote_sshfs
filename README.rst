@@ -49,13 +49,13 @@ to the all the remote machines is also required (e.g. nodes on a cluster).
 
    # Set up the kernels you'd like to use
 
-   ikr manage
+   ikr
 
 .. code:: shell
 
    # Add a new kernel running through GrideEngine
 
-   ikr manage --add \
+   ikr --add \
       --kernel_cmd="ipython kernel -f {connection_file}" \
       --name="Python 2.7" --cpus=2 --pe=smp --interface=sge
 
@@ -63,7 +63,7 @@ to the all the remote machines is also required (e.g. nodes on a cluster).
 
    # Add an SSH connection to a remote machine running IJulia
 
-   ikr manage --add \
+   ikr --add \
       --kernel_cmd="/home/me/julia-79599ada44/bin/julia -i -F /home/me/.julia/v0.3/IJulia/src/kernel.jl {connection_file}" \
       --name="IJulia 0.3.8" --interface=ssh \
       --host=me@remote.machine --workdir='/home/me/Workdir' --language=julia
@@ -73,17 +73,16 @@ to the all the remote machines is also required (e.g. nodes on a cluster).
    # Set up kernels for your local virtual environments that can be run
    # from a single notebook server.
 
-   ikr manage --add \
+   ikr --add \
       --kernel_cmd="/home/me/Virtualenvs/dev/bin/ipython kernel -f {connection_file}" \
       --name="Python 2 (venv:dev)" --interface=local
 
 .. code:: shell
 
-   # NEW!!
    # Connect to a SLURM cluster through a gateway machine (to get into a
    # local network) and cluster frontend machine (where the sqsub runs from).
 
-   ikr manage --add \
+   ikr --add \
       --kernel_cmd="ipython kernel -f {connection_file}" \
       --name="Python 2.7" --cpus=4 --interface=slurm \
       --tunnel-hosts gateway.machine cluster.frontend
