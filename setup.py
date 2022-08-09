@@ -5,19 +5,21 @@ try:
 except ImportError:
     from distutils.core import setup
 
-setup(name='remote_ikernel',
-      version='0.5.0',
+from ikernel_remote import __version__
+
+
+setup(name='ikernel_remote',
+      version=__version__,
       description='Running IPython kernels through batch queues',
       long_description=open('README.rst').read(),
-      author='Tom Daff',
-      author_email='tdd20@cam.ac.uk',
+      author='Tom Daff, Maciej Dems',
+      author_email='tdd20@cam.ac.uk, maciej.dems@p.lodz.pl',
       license='BSD',
-      url='https://github.com:macdems/remote_ikernel',
-      packages=['remote_ikernel'],
-      scripts=['bin/remote_ikernel'],
+      url='https://github.com/macdems/ikernel_remote',
+      packages=['ikernel_remote'],
+      scripts=['bin/ikr'],
       install_requires=['notebook', 'pexpect', 'tornado'],
       classifiers=[
-          'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 3',
           'Framework :: IPython',
           'License :: OSI Approved :: BSD License'])

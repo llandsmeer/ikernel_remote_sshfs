@@ -22,7 +22,7 @@ import pexpect
 
 from tornado.log import LogFormatter
 
-from remote_ikernel import RIK_PREFIX, __version__
+from ikernel_remote import __version__
 
 # ALl the ports that need to be forwarded
 PORT_NAMES = ['hb_port', 'shell_port', 'iopub_port', 'stdin_port',
@@ -40,7 +40,7 @@ def _setup_logging(verbose):
     notebook messages. Will clear any existing handlers too.
     """
 
-    log = logging.getLogger('remote_ikernel')
+    log = logging.getLogger('ikernel_remote')
     if verbose:
         log.setLevel(logging.DEBUG)
     else:
@@ -319,7 +319,7 @@ class RemoteIKernel(object):
         will use the object's connection_info and kernel_command.
         """
         self.log.info("Launching kernel through PBS/Torque.")
-        job_name = 'remote_ikernel'
+        job_name = 'ikernel_remote'
         res = []
         if self.cpus > 1:
             res.append('ncpus={cpus}'.format(cpus=self.cpus))
@@ -360,7 +360,7 @@ class RemoteIKernel(object):
         will use the object's connection_info and kernel_command.
         """
         self.log.info("Launching kernel through GridEngine.")
-        job_name = 'remote_ikernel'
+        job_name = 'ikernel_remote'
         if self.cpus > 1:
             pe_string = "-pe {pe} {cpus}".format(pe=self.pe, cpus=self.cpus)
         else:
@@ -397,7 +397,7 @@ class RemoteIKernel(object):
         pexpect to the class to interact with it.
         """
         self.log.info("Launching kernel through SLURM.")
-        job_name = 'remote_ikernel'
+        job_name = 'ikernel_remote'
         opts = ''
         if self.cpus > 1:
             opts += ' --cpus-per-task {cpus}'.format(cpus=self.cpus)
@@ -432,14 +432,14 @@ class RemoteIKernel(object):
         # Use the specified working directory or try to change to the same
         # directory on the remote machine.
         if self.workdir:
-            self.log.info("Remote working directory {0}.".format(self.workdir))
-            conn.sendline('cd {0}'.format(self.workdir))
+            self.log.info("Remote working directory {}.".format(self.workdir))
+            conn.sendline('cd {}'.format(self.workdir))
         else:
-            self.log.info("Current working directory {0}.".format(self.cwd))
-            conn.sendline('cd {0}'.format(self.cwd))
+            self.log.info("Current working directory {}.".format(self.cwd))
+            conn.sendline('cd {}'.format(self.cwd))
 
         if '{host_connection_file}' in self.kernel_cmd:
-            kernel_name = "{0}kernel-{1}.json".format(RIK_PREFIX, self.uuid)
+            kernel_name = "kernel-remote-{}.json".format(self.uuid)
             host_connection_file = os.path.join(self.runtimedir, kernel_name)
 
         else:

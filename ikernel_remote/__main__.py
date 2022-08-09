@@ -8,8 +8,8 @@ that a kernel is required instead and instance one instead.
 import sys
 
 if 'manage' in sys.argv:
-    from remote_ikernel.manage import manage
+    from ikernel_remote.manage import manage
     manage()
 else:
-    from remote_ikernel.kernel import start_remote_kernel
+    from ikernel_remote.kernel import start_remote_kernel
     start_remote_kernel()

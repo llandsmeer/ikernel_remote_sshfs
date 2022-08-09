@@ -1,8 +1,8 @@
 """
 manage.py
 
-Manage the kernels available to remote_ikernel.
-Run ``remote_ikernel manage`` to see a list of commands.
+Manage the kernels available to ikernel_remote.
+Run ``ikernel_remote manage`` to see a list of commands.
 
 """
 
@@ -18,10 +18,9 @@ from os import path
 from subprocess import list2cmdline
 
 # How we identify kernels that rik will manage
-from remote_ikernel import RIK_PREFIX
 # These go through a compatibility layer to work with IPython and Jupyter
-from remote_ikernel.compat import kernelspec as ks
-from remote_ikernel.compat import tempdir
+from ikernel_remote.compat import kernelspec as ks
+from ikernel_remote.compat import tempdir
 
 
 def delete_kernel(kernel_name):
@@ -66,8 +65,8 @@ def show_kernel(kernel_name):
     print("  * Kernel found in: {0}".format(spec.resource_dir))
     print("  * Name: {0}".format(spec.display_name))
     print("  * Kernel command: {0}".format(list2cmdline(spec.argv)))
-    print("  * remote_ikernel command: {0}".format(list2cmdline(
-        kernel_json['remote_ikernel_argv'])))
+    print("  * ikernel_remote command: {0}".format(list2cmdline(
+        kernel_json['ikernel_remote_argv'])))
     print("  * Raw json: {0}".format(json.dumps(kernel_json, indent=2)))
 
 
@@ -81,7 +80,7 @@ def add_kernel(interface, name, kernel_cmd, cpus=1, mem=None, time=None,
     """
     kernel_name = []
     display_name = []
-    argv = [sys.executable, '-m', 'remote_ikernel']
+    argv = [sys.executable, '-m', 'ikernel_remote']
 
     # How to connect to kernel
     if interface == 'local':
@@ -161,11 +160,11 @@ def add_kernel(interface, name, kernel_cmd, cpus=1, mem=None, time=None,
         display_name.append("(via {0})".format(" ".join(tunnel_hosts)))
         argv.extend(['--tunnel-hosts'] + tunnel_hosts)
 
-    # remote_ikernel needs the connection file too
+    # ikernel_remote needs the connection file too
     argv.extend(['-f', '{connection_file}'])
 
     # Prefix all kernels with 'rik_' for management.
-    kernel_name = RIK_PREFIX + '_'.join(kernel_name)
+    kernel_name = 'remote_' + '_'.join(kernel_name)
     # Having an @ in the string messes up the javascript;
     # so get rid of evrything just in case.
     kernel_name = re.sub(r'\W', '_', kernel_name)
@@ -179,7 +178,7 @@ def add_kernel(interface, name, kernel_cmd, cpus=1, mem=None, time=None,
 
     # Put the commandline in so that '--show' will show how to recreate
     # the kernel
-    kernel_json['remote_ikernel_argv'] = sys.argv
+    kernel_json['ikernel_remote_argv'] = sys.argv
 
     # False attempts a system install, otherwise install as the current user
     if system:
@@ -202,7 +201,7 @@ def add_kernel(interface, name, kernel_cmd, cpus=1, mem=None, time=None,
 
 def manage():
     """
-    Manage the available remote_ikernels.
+    Manage the available ikernel_remotes.
 
     All the options are pulled from arguments so we take no
     arguments here.
@@ -214,7 +213,7 @@ def manage():
 
     # Sort so they are always in the same order
     for kernel_name in sorted(ks.find_kernel_specs()):
-        if kernel_name.startswith(RIK_PREFIX):
+        if kernel_name.startswith('remote_'):
             spec = ks.get_kernel_spec(kernel_name)
             display = "  {kernel_name} : {desc}".format(
                 kernel_name=kernel_name, desc=spec.display_name)
@@ -223,7 +222,7 @@ def manage():
 
     # The raw formatter stops lines wrapping
     parser = argparse.ArgumentParser(
-        prog='%prog manage', description="\n".join(description),
+        prog=sys.argv[0]+' manage', description="\n".join(description),
         formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--show', '-s', help="Print the contents of the "
                         "kernel.")

@@ -1,12 +1,13 @@
-Remote IKernel
+IKernel Remote
 --------------
 
 All your Jupyter kernels, on all your machines, in one place.
+This is a fork of abandonned package ``remote_ikernel`` by Tom Daff <tdd20@cam.ac.uk>.
 
 Launch Jupyter kernels on remote systems and through batch queues so that
 they can be used within a local Jupyter noteboook.
 
-.. image :: https://bitbucket.org/tdaff/remote_ikernel/raw/default/doc/kernels.png
+.. image :: https://github.com/macdems/ikernel_remote/raw/main/doc/kernels.png
 
 Jupyter compatible Kernels start through interactive jobs in batch queue
 systems (SGE, SLURM, PBS...) or through SSH connections. Once the kernel is
@@ -14,10 +15,10 @@ started, SSH tunnels are created for the communication ports are so the
 notebook can talk to the kernel as if it was local.
 
 Commands for managing the kernels are included. It is also possible to use
-``remote_ikernel`` to manage kernels from different virtual environments or
+``ikr`` script to manage kernels from different virtual environments or
 different python implementations.
 
-Install with ``pip install remote_ikernel``. Requires ``notebook`` (as part
+Install with ``pip install ikernel_remote``. Requires ``notebook`` (as part
 of Jupyter), version 4.0 or greater and ``pexpect``. Passwordless ``ssh``
 to the all the remote machines is also required (e.g. nodes on a cluster).
 
@@ -35,26 +36,26 @@ to the all the remote machines is also required (e.g. nodes on a cluster).
    from an older version of IPython, Jupyter will probably migrate your
    existing kernels (to ``~/.local/share/jupyter/kernels/``), but not
    profiles. If you need to stick with IPython 3 series, use an older
-   version of ``remote_ikernel`` or install without using pip/setuptools.
+   version of ``ikernel_remote`` or install without using pip/setuptools.
 
 
 .. code:: shell
 
    # Install the module ('python setup.py install' also works)
 
-   pip install remote_ikernel
+   pip install ikernel_remote
 
 .. code:: shell
 
    # Set up the kernels you'd like to use
 
-   remote_ikernel manage
+   ikr manage
 
 .. code:: shell
 
    # Add a new kernel running through GrideEngine
 
-   remote_ikernel manage --add \
+   ikr manage --add \
       --kernel_cmd="ipython kernel -f {connection_file}" \
       --name="Python 2.7" --cpus=2 --pe=smp --interface=sge
 
@@ -62,7 +63,7 @@ to the all the remote machines is also required (e.g. nodes on a cluster).
 
    # Add an SSH connection to a remote machine running IJulia
 
-   remote_ikernel manage --add \
+   ikr manage --add \
       --kernel_cmd="/home/me/julia-79599ada44/bin/julia -i -F /home/me/.julia/v0.3/IJulia/src/kernel.jl {connection_file}" \
       --name="IJulia 0.3.8" --interface=ssh \
       --host=me@remote.machine --workdir='/home/me/Workdir' --language=julia
@@ -72,7 +73,7 @@ to the all the remote machines is also required (e.g. nodes on a cluster).
    # Set up kernels for your local virtual environments that can be run
    # from a single notebook server.
 
-   remote_ikernel manage --add \
+   ikr manage --add \
       --kernel_cmd="/home/me/Virtualenvs/dev/bin/ipython kernel -f {connection_file}" \
       --name="Python 2 (venv:dev)" --interface=local
 
@@ -82,14 +83,14 @@ to the all the remote machines is also required (e.g. nodes on a cluster).
    # Connect to a SLURM cluster through a gateway machine (to get into a
    # local network) and cluster frontend machine (where the sqsub runs from).
 
-   remote_ikernel manage --add \
+   ikr manage --add \
       --kernel_cmd="ipython kernel -f {connection_file}" \
       --name="Python 2.7" --cpus=4 --interface=slurm \
       --tunnel-hosts gateway.machine cluster.frontend
 
 
 The kernel spec files will be installed so that the new kernel appears in
-the drop-down list in the notebook. ``remote_ikernel manage`` also has options
+the drop-down list in the notebook. ``ikernel_remote manage`` also has options
 to show and delete existing kernels.
 
 .. warning::
@@ -98,7 +99,14 @@ to show and delete existing kernels.
    ``~/.julia/v0.3/IJulia/src/handlers.jl`` so that ``shutdown_request``
    calls ``run(`kill $(getpid())`)`` instaed of ``exit()``.
 
-Changes foe v0.5
+
+Changes for v0.6
+================
+
+  * Renamed to ``ikernel_remote``.
+  * Changed kernel name base to ``kernel-remote``.
+
+Changes for v0.5
 ================
 
   * Options ``--mem`` and ``--time`` to specify required resources for batch jobs.
@@ -140,7 +148,7 @@ Changes for v0.2
   * Connect to a host with ssh, slurm, or local kernels.
   * Changed prefix to ``rik_``.
   * kernel_cmd now requires the ``{connection_file}`` argument.
-  * ``remote_ikernel manage --show`` command to show existing kernels.
+  * ``ikernel_remote manage --show`` command to show existing kernels.
   * Specify the working directory on the remote machine with ``--workdir``.
   * ``kernel-uuid.json`` is copied to the working director for systems where
     there is no access to the frontend filesystem.
