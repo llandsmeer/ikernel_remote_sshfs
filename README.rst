@@ -98,6 +98,10 @@ to show and delete existing kernels.
    ``~/.julia/v0.3/IJulia/src/handlers.jl`` so that ``shutdown_request``
    calls ``run(`kill $(getpid())`)`` instaed of ``exit()``.
 
+Changes for v1.0
+================
+
+  * Setup update.
 
 Changes for v0.6
 ================
