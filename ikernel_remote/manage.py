@@ -64,15 +64,15 @@ def show_kernel(kernel_name):
         kernel_json = json.load(kernel_file)
 
     # Manually format the json to put each key: value on a single line
-    print("  * Kernel found in: {}".format(spec.resource_dir))
-    print("  * Name: {}".format(spec.display_name))
-    print("  * Kernel command: {}".format(list2cmdline(spec.argv)))
+    print("Kernel found in: {}".format(spec.resource_dir))
+    print("Name: {}".format(spec.display_name))
+    print("Kernel command: {}".format(list2cmdline(spec.argv)))
     print(
-        "  * ikernel_remote command: {}".format(
+        "Create command: {}".format(
             list2cmdline(kernel_json['ikernel_remote_argv'])
         )
     )
-    print("  * Raw json: {}".format(json.dumps(kernel_json, indent=2)))
+    print("Raw json: {}".format(json.dumps(kernel_json, indent=2)))
 
 
 def add_kernel(
@@ -228,24 +228,25 @@ def manage():
     arguments here.
     """
 
-    description = [
-        "Remote IKernel management utility", "", "Currently installed kernels:"
+    kernels_display = [
+        "Currently installed remote kernels:"
     ]
-    existing_kernels = {}
+    kernels = {}
 
     # Sort so they are always in the same order
     for kernel_name in sorted(ks.find_kernel_specs()):
-        if kernel_name.startswith('remote_'):
-            spec = ks.get_kernel_spec(kernel_name)
-            display = "  {kernel_name} : {desc}".format(
-                kernel_name=kernel_name, desc=spec.display_name
+        spec = ks.get_kernel_spec(kernel_name)
+        if 'ikernel_remote' in spec.argv:
+            display = "  {name} : {desc}".format(
+                name=kernel_name, desc=spec.display_name
             )
-            existing_kernels[kernel_name] = spec
-            description.append(display)
+            kernels[kernel_name] = spec
+            kernels_display.append(display)
 
     # The raw formatter stops lines wrapping
     parser = argparse.ArgumentParser(
-        description="\n".join(description),
+        description="Remote IKernel management utility. "
+                    "Run without arguments to list installed remote kernels.",
         formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument(
@@ -391,16 +392,16 @@ def manage():
         )
         print("Installed kernel {}.".format(kernel_name))
     elif args.delete:
-        if args.delete in existing_kernels:
+        if args.delete in kernels:
             delete_kernel(args.delete)
         else:
             print("Can't delete {}".format(args.delete))
-            print("\n".join(description[2:]))
+            print("\n" + "\n".join(kernels_display))
     elif args.show:
-        if args.show in existing_kernels:
+        if args.show in kernels:
             show_kernel(args.show)
         else:
             print("Kernel {} doesn't exist".format(args.show))
-            print("\n".join(description[2:]))
+            print("\n" + "\n".join(kernels_display))
     else:
-        parser.print_help()
+        print("\n".join(kernels_display))
