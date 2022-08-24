@@ -14,7 +14,6 @@ import re
 import subprocess
 import sys
 import time
-from tkinter import FALSE
 import uuid
 
 import pexpect
