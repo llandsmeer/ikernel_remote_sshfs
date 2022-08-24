@@ -367,7 +367,7 @@ class RemoteIKernel(object):
         # say automatically?)
         qsub_i.sendline('echo Running on `hostname`')
 
-        # hostnames whould be alphanumeric with . and - permitted
+        # hostnames would be alphanumeric with . and - permitted
         # This way we also ignore the echoed echo command
         qsub_i.expect('Running on ([\w.-]+)')
         node = qsub_i.match.groups()[0]
@@ -649,9 +649,11 @@ class RemoteIKernel(object):
 
         if ':' in self.host:
             host, host_port = self.host.split(":")
-            ssh = 'ssh -p {host_port}'.format(host_port=host_port)
+            ssh = 'ssh -o StrictHostKeyChecking=no -p {host_port}'.format(
+                host_port=host_port
+            )
         else:
-            ssh = 'ssh '
+            ssh = 'ssh -o StrictHostKeyChecking=no'
             host = self.host
 
         # Timeout is specified here, this should be longer than the checking
