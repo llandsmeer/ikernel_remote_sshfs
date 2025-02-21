@@ -6,6 +6,8 @@ job schedulers.
 
 """
 
+import secrets
+import random
 import argparse
 import json
 import logging
@@ -205,6 +207,7 @@ class RemoteIKernel(object):
 
         """
 
+        self.sshfs_proc = None
         self.log = _setup_logging(verbose)
         self.log.info("Remote kernel version: {}.".format(__version__))
         self.log.info("File location: {}.".format(__file__))
@@ -321,17 +324,37 @@ class RemoteIKernel(object):
 
         Launch an ssh connection using pexpect so it can be interacted with.
         """
+        pr = 34000 + random.randint(0, 999) # ha
+        pl = 35000 + random.randint(0, 999)
+        wd = f'/tmp/ikrsshfs-{secrets.token_urlsafe()}'
+        self.sshfs_proc = subprocess.Popen([
+            'ncat', '-l', '-p', str(pl), '-e',
+            f'/usr/lib/openssh/sftp-server -d {self.cwd}'
+            ])
+        time.sleep(0.1)
+        assert self.sshfs_proc.returncode is None
         self.log.info("Launching kernel over SSH.")
         if self.launch_args:
             launch_args = self.launch_args
         else:
             launch_args = ''
-        login_cmd = 'ssh -o StrictHostKeyChecking=no {args} {host}'.format(
-            args=launch_args, host=self.host
+        login_cmd = 'ssh -R {port_remote}:localhost:{port_local} -o StrictHostKeyChecking=no {args} {host}'.format(
+            args=launch_args, host=self.host,
+            port_remote=pr,
+            port_local=pl
         )
         self.log.debug("Login command: '{}'.".format(login_cmd))
-        self._spawn(login_cmd)
+        ssh = self._spawn(login_cmd)
         check_password(self.connection)
+        ssh.sendline(f'mkdir -p {wd}')
+        ssh.sendline(f'sshfs localhost: {wd} -o directport={pr}')
+        ssh.sendline(f'cd {wd}')
+
+    def __del__(self):
+        if self.sshfs_proc is not None:
+            self.sshfs_proc.kill()
+            self.sshfs_proc.wait()
+            self.sshfs_proc = None
 
     def launch_pbs(self):
         """
