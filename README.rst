@@ -1,6 +1,19 @@
 IKernel Remote
 --------------
 
+Fork of https://github.com/macdems/ikernel_remote
+
+Some POC with getting your local directory on the remote via SSHFS
+
+requires
+
+ - `apt install ncat`
+ - `/usr/lib/openssh/sftp-server`
+ - a trusted set of systems as a lot of questionable things are happening security wise (ie .format() instead of proper shell escaping)
+
+
+### Old readme:
+
 All your Jupyter kernels, on all your machines, in one place.
 This is a fork of abandonned package ``remote_ikernel`` by Tom Daff <tdd20@cam.ac.uk>.
 
